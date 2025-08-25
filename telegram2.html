@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Rollover v2</title>
+    <title>Rollover Odds Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Chart.js for the growth graph -->
@@ -222,13 +222,13 @@
         }
     </style>
 </head>
-<body class="" style="background-color:white; color:black;">
+<body class="">
     <div class="container">
 
         <!-- Left: Inputs + Result -->
         <section class="card">
             <div class="header">
-                <h2>💰 Rollover Odds Calculator</h2>
+                <h2>💰 Rollover</h2>
                 <label class="toggle" title="Toggle Light/Dark (Glass) Mode">
                     <input id="modeToggle" type="checkbox" />
                 <span>Light mode</span>
@@ -238,7 +238,7 @@
         <div class="row">
             <div>
                 <label>Amount (₦)</label>
-                <input type="number" id="start" placeholder="e.g. 100000" inputmode="decimal">
+                <input type="number" id="start" placeholder="e.g. 100" inputmode="decimal">
             </div>
             <div>
                 <label>Daily Odds</label>
@@ -301,7 +301,7 @@
     <button class="btn" id="calcBtnSticky">Calculate</button>
     <button class="btn btn-secondary" id="exportBtnSticky">Export CSV</button>
 </div>
-
+<br> </br>
 <script>
     // ===== Utilities =====
     const fmt = (n) => (isNaN(n) ? "0.00":
@@ -599,6 +599,34 @@
         }
     });
 </script>
-    
+<style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+}
+
+.footer {
+      background-color: #222;
+      color: #ccc;
+      text-align: center;
+      padding: 20px 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 14px;
+}
+
+.footer span {
+      color: #fff;
+      font-weight: bold;
+}
+  </style>
+  <br> 
+  <!-- Your main page content goes here -->
+  <div class="footer">
+    &copy; <span>Dev Samson C. Uche</span> — All rights reserved.
+  </div>
+
+
 </body>
     </html>
