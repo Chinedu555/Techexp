@@ -1,84 +1,603 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Form</title>
+    <title>Rollover Odds Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Chart.js for the growth graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+:root {
+        --bg1: #74ebd5;
+        --bg2: #ACB6E5;
+        --glass-bg: rgba(255,255,255,.16);
+        --glass-border: rgba(255,255,255,.35);
+        --text: #ffffff;
+        --muted: rgba(255,255,255,.75);
+        --accent-1: #667eea;
+        --accent-2: #764ba2;
+        --success: #00ff99;
+        --danger: #ff6b6b;
+        --shadow: 0 8px 32px rgba(0,0,0,.2);
+    }
+        .light {
+            --bg1: #edf2f7;
+            --bg2: #e2e8f0;
+            --glass-bg: rgba(255,255,255,.9);
+            --glass-border: rgba(0,0,0,.1);
+            --text: #0f172a;
+            --muted: #475569;
+            --accent-1: #0ea5e9;
+            --accent-2: #6366f1;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --shadow: 0 8px 32px rgba(2,6,23,.08);
+        }
+
+        * {
+            box-sizing: border-box
+        }
         body {
+            margin: 0;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            background-color: #f4f4f4;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 980px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
         h2 {
-            color: #333;
+            margin: 0;
+            font-size: 22px
         }
-        form {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            resize: none;
-        }
-        button {
-            margin-top: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 5px;
+
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--muted);
             cursor: pointer;
+            user-select: none;
         }
-        button:hover {
-            background-color: #218838;
+        .toggle input {
+            accent-color: #fff;
+            width: 18px;
+            height: 18px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 14px
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: rgba(255,255,255,.22);
+            color: var(--text);
+        }
+        input::placeholder {
+            color: var(--muted)
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px
+        }
+
+        .btn {
+            margin-top: 16px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 28px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+            box-shadow: 0 4px 14px rgba(0,0,0,.2);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,0,0,.28)
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,.18);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
+
+        #result {
+            margin-top: 12px;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--success);
+            letter-spacing: .3px;
+        }
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px
+        }
+
+        .table-wrap {
+            margin-top: 12px;
+            max-height: 360px;
+            overflow: auto;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px
+        }
+        th,td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--glass-border)
+        }
+        th {
+            position: sticky;
+            top: 0;
+            background: rgba(0,0,0,.08)
+        }
+        tr:hover td {
+            background: rgba(0,0,0,.04)
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 360px !important;
+        }
+
+        /* Sticky calculate bar for small screens */
+        .sticky-bar {
+            display: none;
+        }
+        @media (max-width: 860px) {
+            .container {
+                grid-template-columns: 1fr
+            }
+            .sticky-bar {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                padding: 12px;
+                display: flex;
+                gap: 10px;
+                background: rgba(0,0,0,.25);
+                backdrop-filter: blur(10px);
+            }
+            .sticky-bar .btn {
+                margin: 0
+            }
+            body {
+                padding-bottom: 84px
+            }
         }
     </style>
 </head>
-<body>
-    <h2>Send Message to Telegram</h2>
-    <form id="telegramForm">
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" required></textarea>
-        <button type="submit">Send</button>
-    </form><script>
-    document.getElementById('telegramForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        let message = document.getElementById('message').value;
-        let telegramBotToken = '7331423755:AAENUrKEi4NQ856ex_pm8Hfqhhv9D28Ok3c';
-        let chatId = '5603486745';
-        
-        let url = `https://api.telegram.org/bot${7331423755:AAENUrKEi4NQ856ex_pm8Hfqhhv9D28Ok3c}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-        
-        fetch(url, { method: 'GET' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    alert('Message sent successfully!');
-                } else {
-                    alert('Failed to send message.');
+<body class="">
+    <div class="container">
+
+        <!-- Left: Inputs + Result -->
+        <section class="card">
+            <div class="header">
+                <h2>💰 Rollover Odds Calculator</h2>
+                <label class="toggle" title="Toggle Light/Dark (Glass) Mode">
+                    <input id="modeToggle" type="checkbox" />
+                <span>Light mode</span>
+            </label>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Amount (₦)</label>
+                <input type="number" id="start" placeholder="e.g. 100000" inputmode="decimal">
+            </div>
+            <div>
+                <label>Daily Odds</label>
+                <input type="number" id="odds" step="0.01" placeholder="e.g. 1.5">
+            </div>
+            <div>
+                <label>Days</label>
+                <input type="number" id="days" placeholder="e.g. 30">
+            </div>
+        </div>
+
+        <button class="btn" id="calcBtn">Calculate</button>
+
+        <div id="result">
+            ₦0.00
+        </div>
+        <div class="muted">
+            Tip: Results formatted with commas for quick reading.
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="saveBtn" title="Save inputs & last result">Save</button>
+            <button class="btn btn-secondary" id="loadBtn" title="Load last saved values">Load</button>
+            <button class="btn btn-secondary" id="exportBtn" title="Export daily breakdown to CSV">Export CSV</button>
+            <button class="btn btn-secondary" id="clearBtn" title="Clear inputs & outputs">Clear</button>
+        </div>
+
+        <p class="muted">
+            ⚠️ Disclaimer: Betting rollovers are risky. Only use funds you can afford to lose.
+        </p>
+    </section>
+
+    <!-- Right: Chart + Breakdown -->
+    <section class="card">
+        <div class="header" style="margin-bottom:6px;">
+            <h2>📈 Growth Chart & Breakdown</h2>
+        </div>
+        <canvas id="growthChart" aria-label="Growth over days"></canvas>
+
+        <div class="table-wrap">
+            <table id="breakdownTable">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Day</th>
+                        <th style="text-align:right;">Amount (₦)</th>
+                        <th style="text-align:right;">Change (₦)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<!-- Sticky actions on mobile -->
+<div class="sticky-bar">
+    <button class="btn" id="calcBtnSticky">Calculate</button>
+    <button class="btn btn-secondary" id="exportBtnSticky">Export CSV</button>
+</div>
+
+<script>
+    // ===== Utilities =====
+    const fmt = (n) => (isNaN(n) ? "0.00":
+        n.toLocaleString(undefined, {
+            minimumFractionDigits: 2, maximumFractionDigits: 2
+        }));
+
+    const animateCount = (el, start = 0, end = 0, duration = 900) => {
+        // Simple easing count-up animation
+        const startTime = performance.now();
+        const tick = (now) => {
+            const p = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+            const val = start + (end - start) * eased;
+            el.textContent = "₦" + fmt(val);
+            if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    };
+
+    const storageKey = "rollover_calc_v1";
+
+    // ===== Elements =====
+    const elStart = document.getElementById("start");
+    const elOdds = document.getElementById("odds");
+    const elDays = document.getElementById("days");
+    const elResult = document.getElementById("result");
+    const modeToggle = document.getElementById("modeToggle");
+
+    const calcBtn = document.getElementById("calcBtn");
+    const calcBtnSticky = document.getElementById("calcBtnSticky");
+    const saveBtn = document.getElementById("saveBtn");
+    const loadBtn = document.getElementById("loadBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const exportBtnSticky = document.getElementById("exportBtnSticky");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const tbody = document.querySelector("#breakdownTable tbody");
+    let chart; // Chart.js instance
+
+    console.log("[Init] Elements ready.");
+
+    // ===== Core Calculation =====
+    function calculateAndRender() {
+        console.log("[Calculate] Begin calculation.");
+        const start = parseFloat(elStart.value);
+        const odds = parseFloat(elOdds.value);
+        const days = parseInt(elDays.value);
+
+        if (isNaN(start) || isNaN(odds) || isNaN(days) || start <= 0 || odds <= 0 || days < 0) {
+            elResult.textContent = "⚠️ Please enter valid positive numbers.";
+            console.log("[Calculate] Invalid inputs:", {
+                start, odds, days
+            });
+            return {
+                series: [],
+                labels: []
+            };
+        }
+
+        // Compute daily amounts
+        const amounts = [];
+        let curr = start;
+        amounts.push(curr);
+        for (let d = 1; d <= days; d++) {
+            curr = curr * odds;
+            amounts.push(curr);
+        }
+
+        const finalAmount = amounts[amounts.length - 1];
+
+        // Animate result
+        const currentShown = Number(elResult.textContent.replace(/[^\d.-]/g, "")) || 0;
+        animateCount(elResult, currentShown, finalAmount);
+
+        // Render table
+        renderTable(amounts);
+
+        // Render chart
+        renderChart(amounts);
+
+        console.log("[Calculate] Done. Final:", finalAmount);
+        return {
+            series: amounts,
+            labels: [...Array(amounts.length).keys()]
+        };
+    }
+
+    function renderTable(amounts) {
+        console.log("[Table] Rendering", amounts.length, "rows.");
+        tbody.innerHTML = "";
+        for (let i = 0; i < amounts.length; i++) {
+            const tr = document.createElement("tr");
+            const dayTd = document.createElement("td");
+            const amtTd = document.createElement("td");
+            const chgTd = document.createElement("td");
+
+            dayTd.textContent = i; // Day 0 is start
+            dayTd.style.textAlign = "left";
+            amtTd.textContent = "₦" + fmt(amounts[i]);
+            amtTd.style.textAlign = "right";
+
+            const change = i === 0 ? 0: (amounts[i] - amounts[i-1]);
+            chgTd.textContent = (i === 0 ? "—": "₦" + fmt(change));
+            chgTd.style.textAlign = "right";
+
+            tr.appendChild(dayTd);
+            tr.appendChild(amtTd);
+            tr.appendChild(chgTd);
+            tbody.appendChild(tr);
+        }
+    }
+
+    function renderChart(amounts) {
+        const ctx = document.getElementById("growthChart").getContext("2d");
+        const labels = amounts.map((_, i)=> i);
+
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [{
+                    label: "Amount (₦)",
+                    data: amounts,
+                    fill: false,
+                    tension: 0.18
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: "index", intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => " ₦" + fmt(ctx.parsed.y)
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true, text: "Day"
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true, text: "Amount (₦)"
+                        },
+                        ticks: {
+                            callback: (v)=> "₦" + (Number(v) || 0).toLocaleString()
+                        }
+                    }
                 }
-            })
-            .catch(error => console.error('Error:', error));
+            }
+        });
+        console.log("[Chart] Rendered with", amounts.length, "points.");
+    }
+
+    // ===== Save / Load =====
+    function saveState() {
+        const data = {
+            start: elStart.value,
+            odds: elOdds.value,
+            days: elDays.value,
+            result: elResult.textContent
+        };
+        localStorage.setItem(storageKey, JSON.stringify(data));
+        console.log("[Storage] Saved:", data);
+        alert("Saved!");
+    }
+
+    function loadState() {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) {
+            alert("No saved data found."); return;
+        }
+        const data = JSON.parse(raw);
+        elStart.value = data.start ?? "";
+        elOdds.value = data.odds ?? "";
+        elDays.value = data.days ?? "";
+        elResult.textContent = data.result ?? "₦0.00";
+        console.log("[Storage] Loaded:", data);
+        // Recalculate to rebuild table & chart from inputs
+        calculateAndRender();
+    }
+
+    // ===== Export CSV =====
+    function exportCSV() {
+        const start = parseFloat(elStart.value);
+        const odds = parseFloat(elOdds.value);
+        const days = parseInt(elDays.value);
+        if (isNaN(start) || isNaN(odds) || isNaN(days) || start <= 0 || odds <= 0 || days < 0) {
+            alert("Please enter valid inputs before exporting.");
+            return;
+        }
+        // Build the same series used in UI
+        const amounts = [];
+        let curr = start;
+        amounts.push(curr);
+        for (let d = 1; d <= days; d++) {
+            curr *= odds; amounts.push(curr);
+        }
+
+        let csv = "Day,Amount (NGN),Change (NGN)\n";
+        for (let i = 0; i < amounts.length; i++) {
+            const change = i === 0 ? "": (amounts[i] - amounts[i-1]);
+            csv += `${i},${amounts[i].toFixed(2)},${i === 0?"": change.toFixed(2)}\n`;
+        }
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;"
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "rollover_breakdown.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log("[Export] CSV rows:", amounts.length);
+    }
+
+    // ===== Clear =====
+    function clearAll() {
+        elStart.value = ""; elOdds.value = ""; elDays.value = "";
+        elResult.textContent = "₦0.00";
+        tbody.innerHTML = "";
+        if (chart) chart.destroy();
+        console.log("[Clear] Inputs and outputs cleared.");
+    }
+
+    // ===== Theme toggle =====
+    function applyModeFromStorage() {
+        const mode = localStorage.getItem("rollover_mode") || "dark";
+        const isLight = mode === "light";
+        document.body.classList.toggle("light", isLight);
+        modeToggle.checked = isLight;
+    }
+
+    modeToggle.addEventListener("change", ()=> {
+        const isLight = modeToggle.checked;
+        document.body.classList.toggle("light", isLight);
+        localStorage.setItem("rollover_mode", isLight ? "light": "dark");
+        console.log("[Mode] Switched to", isLight ? "light": "dark");
+    });
+
+    // ===== Wire up events =====
+    calcBtn.addEventListener("click", calculateAndRender);
+    calcBtnSticky.addEventListener("click", calculateAndRender);
+    saveBtn.addEventListener("click", saveState);
+    loadBtn.addEventListener("click", loadState);
+    exportBtn.addEventListener("click", exportCSV);
+    exportBtnSticky.addEventListener("click", exportCSV);
+    clearBtn.addEventListener("click", clearAll);
+
+    // Enter key triggers calculate
+    [elStart, elOdds, elDays].forEach(inp => {
+        inp.addEventListener("keydown", (e)=> {
+            if (e.key === "Enter") {
+                calculateAndRender();
+            }
+        });
+    });
+
+    // ===== Init =====
+    window.addEventListener("DOMContentLoaded", ()=> {
+        console.log("[Init] DOM ready.");
+        applyModeFromStorage();
+        // If there is saved state, load it silently
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                elStart.value = data.start ?? "";
+                elOdds.value = data.odds ?? "";
+                elDays.value = data.days ?? "";
+                console.log("[Init] Loaded saved inputs.");
+                if (data.start && data.odds && data.days) {
+                    calculateAndRender();
+                }
+            }catch(err) {
+                console.warn("[Init] Failed to parse saved state", err);
+            }
+        }
     });
 </script>
-
 </body>
-</html>
+    </html>
